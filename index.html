@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Incredible Machine Remix</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: "Manrope", system-ui, sans-serif;
+        background: #0c0f18;
+        color: #f5f7ff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: radial-gradient(circle at top, #1d2440, #0c0f18 70%);
+      }
+
+      #root {
+        min-height: 100vh;
+        display: flex;
+        align-items: stretch;
+      }
+
+      .app {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+      }
+
+      header {
+        padding: 32px 48px 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+      }
+
+      header h1 {
+        margin: 0;
+        font-size: 30px;
+        letter-spacing: 0.6px;
+      }
+
+      header p {
+        margin: 8px 0 0;
+        color: #b7c2e3;
+        max-width: 520px;
+      }
+
+      .level {
+        background: rgba(24, 30, 52, 0.9);
+        padding: 10px 18px;
+        border-radius: 999px;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid #2d3660;
+      }
+
+      main {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 24px;
+        padding: 24px 48px 48px;
+        flex: 1;
+      }
+
+      .panel {
+        background: linear-gradient(160deg, rgba(20, 25, 44, 0.95), rgba(12, 16, 30, 0.98));
+        border: 1px solid #283153;
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 24px 40px rgba(10, 13, 24, 0.45);
+      }
+
+      .goal {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 14px 18px;
+        background: rgba(30, 39, 68, 0.9);
+        border-radius: 16px;
+        margin-bottom: 16px;
+      }
+
+      .goal h3 {
+        margin: 0;
+        font-size: 18px;
+      }
+
+      .goal span {
+        color: #91a2da;
+        font-size: 14px;
+      }
+
+      .stage {
+        display: grid;
+        gap: 16px;
+        margin-bottom: 18px;
+      }
+
+      .stage-track {
+        background: #121829;
+        border: 1px solid #2a3461;
+        border-radius: 18px;
+        padding: 18px;
+      }
+
+      .track-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+
+      .track-header h4 {
+        margin: 0;
+        font-size: 16px;
+      }
+
+      .progress-wrap {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: #9aa8d8;
+      }
+
+      .progress-bar {
+        position: relative;
+        width: 140px;
+        height: 6px;
+        background: #202a48;
+        border-radius: 999px;
+        overflow: hidden;
+      }
+
+      .progress-bar span {
+        position: absolute;
+        inset: 0;
+        width: 0;
+        background: linear-gradient(90deg, #7b93ff, #54e0c2);
+      }
+
+      .nodes {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+
+      .node {
+        background: rgba(23, 30, 52, 0.9);
+        border-radius: 16px;
+        padding: 14px;
+        border: 1px dashed #334069;
+        min-height: 86px;
+        display: grid;
+        gap: 8px;
+        align-content: center;
+        transition: border-color 0.2s ease, transform 0.2s ease;
+      }
+
+      .node.active {
+        border-color: #7b93ff;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(12, 17, 32, 0.5);
+      }
+
+      .node span {
+        font-size: 12px;
+        color: #8f9dd0;
+      }
+
+      .node strong {
+        font-size: 15px;
+      }
+
+      .workbench {
+        display: grid;
+        gap: 16px;
+      }
+
+      .slot {
+        padding: 16px;
+        border: 2px dashed #36406a;
+        border-radius: 18px;
+        background: rgba(20, 25, 42, 0.6);
+        display: grid;
+        gap: 12px;
+      }
+
+      .slot-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .slot strong {
+        font-size: 16px;
+      }
+
+      .slot button {
+        background: transparent;
+        border: none;
+        color: #8ea0d8;
+        cursor: pointer;
+        font-size: 13px;
+      }
+
+      .slot .part-pill {
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        font-size: 13px;
+        background: rgba(41, 52, 86, 0.6);
+      }
+
+      .slot .empty {
+        color: #6874a7;
+      }
+
+      .drop-zone {
+        border-radius: 12px;
+        padding: 10px 12px;
+        border: 1px dashed #3f4a78;
+        color: #8090c4;
+        font-size: 12px;
+      }
+
+      .palette {
+        display: grid;
+        gap: 12px;
+      }
+
+      .part-card {
+        border-radius: 18px;
+        padding: 16px;
+        background: #1e2640;
+        border: 1px solid #2d3760;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .part-card:hover {
+        transform: translateY(-2px);
+        border-color: #4c61b3;
+        box-shadow: 0 12px 20px rgba(13, 18, 34, 0.4);
+      }
+
+      .part-card.active {
+        border-color: #7b93ff;
+        background: #273059;
+      }
+
+      .part-card h4 {
+        margin: 0 0 6px;
+      }
+
+      .part-card p {
+        margin: 0;
+        color: #a6b1da;
+        font-size: 13px;
+      }
+
+      .part-meta {
+        display: inline-flex;
+        gap: 8px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+      }
+
+      .part-meta span {
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: rgba(123, 147, 255, 0.15);
+        border: 1px solid rgba(123, 147, 255, 0.4);
+        font-size: 11px;
+        color: #b9c6f5;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .actions button {
+        border: none;
+        border-radius: 12px;
+        padding: 12px 18px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
+
+      .actions button:hover {
+        transform: translateY(-1px);
+      }
+
+      .primary {
+        background: linear-gradient(135deg, #7b93ff, #5667ff);
+        color: #fff;
+      }
+
+      .ghost {
+        background: #232b46;
+        color: #c3cee8;
+      }
+
+      .warning {
+        background: #3a2634;
+        color: #f8cdd8;
+      }
+
+      .status {
+        margin-top: 16px;
+        padding: 14px;
+        border-radius: 14px;
+        border: 1px solid;
+        font-size: 14px;
+      }
+
+      .status.success {
+        border-color: #4de7b0;
+        color: #c8ffe9;
+        background: rgba(77, 231, 176, 0.08);
+      }
+
+      .status.fail {
+        border-color: #f88989;
+        color: #ffd6d6;
+        background: rgba(248, 137, 137, 0.08);
+      }
+
+      .prompt-list {
+        display: grid;
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      .prompt-list li {
+        color: #a7b2dd;
+        font-size: 14px;
+      }
+
+      .timeline {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+      }
+
+      .timeline span {
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid #2f3963;
+        font-size: 12px;
+        color: #a9b5df;
+      }
+
+      .log {
+        display: grid;
+        gap: 8px;
+        margin-top: 12px;
+        color: #a4b1dd;
+        font-size: 13px;
+      }
+
+      @media (max-width: 960px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+        header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+      const { useMemo, useRef, useState } = React;
+
+      const PARTS = [
+        {
+          id: "marble-drop",
+          name: "Marble Drop",
+          detail: "Gravity sends the marble rolling into motion.",
+          tags: ["analog", "slow"],
+        },
+        {
+          id: "fan-blast",
+          name: "Fan Blast",
+          detail: "A burst of air launches the next element.",
+          tags: ["air", "boost"],
+        },
+        {
+          id: "pulley-lift",
+          name: "Pulley Lift",
+          detail: "A rope system raises the payload.",
+          tags: ["lift", "timed"],
+        },
+        {
+          id: "domino-chain",
+          name: "Domino Chain",
+          detail: "A satisfying cascade of dominos.",
+          tags: ["chain", "classic"],
+        },
+        {
+          id: "laser-trip",
+          name: "Laser Trip",
+          detail: "Modern sensor triggers the next event.",
+          tags: ["sensor", "spark"],
+        },
+        {
+          id: "robot-arm",
+          name: "Robot Arm",
+          detail: "Precision arm delivers the final action.",
+          tags: ["precision", "finish"],
+        },
+      ];
+
+      const PUZZLES = [
+        {
+          title: "Wake the Sleepy Cat",
+          goal: "Trigger a gentle wake-up alarm without startling the cat.",
+          hints: [
+            "Start with something slow.",
+            "Use a controlled lift before the final cue.",
+          ],
+          solution: ["marble-drop", "pulley-lift", "robot-arm"],
+          timeline: ["Marble drop", "Pulley lift", "Robot arm"],
+        },
+        {
+          title: "Toast the Croissant",
+          goal: "Deliver warm air to the toaster at just the right time.",
+          hints: ["Air power should happen mid-chain.", "End with a spark."],
+          solution: ["domino-chain", "fan-blast", "laser-trip"],
+          timeline: ["Dominos", "Fan blast", "Laser trip"],
+        },
+        {
+          title: "Launch the Space Snack",
+          goal: "Send a snack capsule into the pod with style.",
+          hints: ["Use a sensor for the finale.", "Start with a burst."],
+          solution: ["fan-blast", "domino-chain", "laser-trip"],
+          timeline: ["Fan blast", "Dominos", "Laser trip"],
+        },
+      ];
+
+      const SLOT_LABELS = ["Trigger", "Link", "Finish"];
+
+      function App() {
+        const [selectedPart, setSelectedPart] = useState(PARTS[0].id);
+        const [slots, setSlots] = useState([null, null, null]);
+        const [status, setStatus] = useState(null);
+        const [level, setLevel] = useState(0);
+        const [running, setRunning] = useState(false);
+        const [activeStep, setActiveStep] = useState(null);
+        const [progress, setProgress] = useState(0);
+        const [runLog, setRunLog] = useState([]);
+        const runTokenRef = useRef(0);
+
+        const puzzle = PUZZLES[level];
+
+        const selectedPartData = useMemo(
+          () => PARTS.find((part) => part.id === selectedPart),
+          [selectedPart]
+        );
+
+        const placePart = (index, partId) => {
+          setSlots((prev) => {
+            const next = [...prev];
+            next[index] = partId;
+            return next;
+          });
+          setStatus(null);
+        };
+
+        const handleSlotClick = (index) => placePart(index, selectedPart);
+
+        const clearSlot = (index) => {
+          setSlots((prev) => {
+            const next = [...prev];
+            next[index] = null;
+            return next;
+          });
+          setStatus(null);
+        };
+
+        const resetMachine = () => {
+          setSlots([null, null, null]);
+          setStatus(null);
+          setRunning(false);
+          setActiveStep(null);
+          setProgress(0);
+          setRunLog([]);
+          runTokenRef.current += 1;
+        };
+
+        const stopMachine = () => {
+          runTokenRef.current += 1;
+          setRunning(false);
+          setActiveStep(null);
+          setProgress(0);
+          setStatus({ type: "fail", message: "Run interrupted. Adjust and retry." });
+        };
+
+        const runMachine = () => {
+          if (running) {
+            return;
+          }
+
+          if (slots.some((slot) => !slot)) {
+            setStatus({
+              type: "fail",
+              message: "Fill every slot before running the machine.",
+            });
+            return;
+          }
+
+          const steps = slots.map((slotId) =>
+            PARTS.find((part) => part.id === slotId)
+          );
+
+          const runToken = runTokenRef.current + 1;
+          runTokenRef.current = runToken;
+          setRunning(true);
+          setStatus(null);
+          setActiveStep(null);
+          setProgress(0);
+          setRunLog([]);
+
+          steps.forEach((part, index) => {
+            const delay = 700 * (index + 1);
+            setTimeout(() => {
+              if (runTokenRef.current !== runToken) {
+                return;
+              }
+              setActiveStep(index);
+              setProgress(Math.round(((index + 1) / steps.length) * 100));
+              setRunLog((prev) => [...prev, `Step ${index + 1}: ${part.name}`]);
+              if (index === steps.length - 1) {
+                const solved = puzzle.solution.every(
+                  (partId, stepIndex) => slots[stepIndex] === partId
+                );
+                setStatus({
+                  type: solved ? "success" : "fail",
+                  message: solved
+                    ? "Success! The chain reaction worked perfectly."
+                    : "That sequence fizzled out. Try a different order.",
+                });
+                setRunning(false);
+              }
+            }, delay);
+          });
+        };
+
+        const nextPuzzle = () => {
+          setLevel((prev) => (prev + 1) % PUZZLES.length);
+          setSlots([null, null, null]);
+          setStatus(null);
+          setActiveStep(null);
+          setProgress(0);
+          setRunLog([]);
+          runTokenRef.current += 1;
+          setRunning(false);
+        };
+
+        const handleDragStart = (event, partId) => {
+          event.dataTransfer.setData("text/plain", partId);
+        };
+
+        const handleDrop = (event, index) => {
+          event.preventDefault();
+          const partId = event.dataTransfer.getData("text/plain");
+          if (partId) {
+            placePart(index, partId);
+          }
+        };
+
+        return (
+          <div className="app">
+            <header>
+              <div>
+                <h1>Incredible Machine Remix</h1>
+                <p>
+                  Build a chain reaction with modern gadgets inspired by the
+                  classic puzzle sandbox. Drag parts into the machine, then run
+                  the sequence and watch the chain react.
+                </p>
+              </div>
+              <div className="level">
+                <span>Level {level + 1}</span>
+                <strong>{puzzle.title}</strong>
+              </div>
+            </header>
+
+            <main>
+              <section className="panel">
+                <div className="goal">
+                  <div>
+                    <h3>Mission Brief</h3>
+                    <span>{puzzle.goal}</span>
+                  </div>
+                  <button className="ghost" onClick={nextPuzzle}>
+                    New Scenario
+                  </button>
+                </div>
+
+                <div className="stage">
+                  <div className="stage-track">
+                    <div className="track-header">
+                      <h4>Machine Stage</h4>
+                      <div className="progress-wrap">
+                        <span>Chain energy</span>
+                        <div className="progress-bar">
+                          <span style={{ width: `${progress}%` }} />
+                        </div>
+                        <strong>{progress}%</strong>
+                      </div>
+                    </div>
+                    <div className="nodes">
+                      {SLOT_LABELS.map((label, index) => {
+                        const partId = slots[index];
+                        const part = PARTS.find((item) => item.id === partId);
+                        return (
+                          <div
+                            className={`node ${
+                              activeStep === index ? "active" : ""
+                            }`}
+                            key={`${label}-node`}
+                          >
+                            <span>{puzzle.timeline[index]}</span>
+                            <strong>{part ? part.name : label}</strong>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="workbench">
+                  {SLOT_LABELS.map((label, index) => {
+                    const partId = slots[index];
+                    const part = PARTS.find((item) => item.id === partId);
+                    return (
+                      <div
+                        className="slot"
+                        key={label}
+                        onDragOver={(event) => event.preventDefault()}
+                        onDrop={(event) => handleDrop(event, index)}
+                      >
+                        <div className="slot-top">
+                          <strong>{label}</strong>
+                          <div>
+                            <button onClick={() => handleSlotClick(index)}>
+                              Place
+                            </button>
+                            {part && (
+                              <button onClick={() => clearSlot(index)}>
+                                Clear
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <div>
+                          {part ? (
+                            <span className="part-pill">{part.name}</span>
+                          ) : (
+                            <span className="part-pill empty">Select a part</span>
+                          )}
+                        </div>
+                        <div className="drop-zone">
+                          Drag a part here or tap “Place”
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="actions">
+                  <button className="primary" onClick={runMachine}>
+                    {running ? "Running..." : "Run Machine"}
+                  </button>
+                  <button className="ghost" onClick={resetMachine}>
+                    Reset
+                  </button>
+                  <button className="warning" onClick={stopMachine}>
+                    Stop
+                  </button>
+                </div>
+
+                {status && (
+                  <div className={`status ${status.type}`}>{status.message}</div>
+                )}
+
+                <div className="log">
+                  <strong>Run Log</strong>
+                  {runLog.length === 0 ? (
+                    <span>Drag parts into the track and hit Run.</span>
+                  ) : (
+                    runLog.map((entry) => <span key={entry}>{entry}</span>)
+                  )}
+                </div>
+
+                <ul className="prompt-list">
+                  {puzzle.hints.map((hint) => (
+                    <li key={hint}>{hint}</li>
+                  ))}
+                </ul>
+              </section>
+
+              <section className="panel">
+                <h3>Parts Library</h3>
+                <p>
+                  Pick a part and place it into the machine slots. Combine analog
+                  classics with futuristic tools to make the chain reaction work.
+                </p>
+                <div className="palette">
+                  {PARTS.map((part) => (
+                    <div
+                      key={part.id}
+                      className={`part-card ${
+                        selectedPart === part.id ? "active" : ""
+                      }`}
+                      onClick={() => setSelectedPart(part.id)}
+                      role="button"
+                      tabIndex={0}
+                      draggable
+                      onDragStart={(event) => handleDragStart(event, part.id)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          setSelectedPart(part.id);
+                        }
+                      }}
+                    >
+                      <h4>{part.name}</h4>
+                      <p>{part.detail}</p>
+                      <div className="part-meta">
+                        {part.tags.map((tag) => (
+                          <span key={tag}>{tag}</span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="status success" style={{ marginTop: "20px" }}>
+                  Selected: {selectedPartData.name}
+                </div>
+              </section>
+            </main>
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
+</html>
